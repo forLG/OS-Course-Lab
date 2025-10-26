@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>lab1.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="lab1-report">Lab1 Report</h1>
+<h2 id="%E5%90%AF%E5%8A%A8-0-%E5%8F%B7%E6%A0%B8">启动 0 号核</h2>
+<p><strong>思考题 1</strong><br>
+<code>_start</code> 函数如何让其中一个核首先进入初始化流程，并让其他核暂停执行？</p>
+<p>通过 <code>mpidr_el1</code> 读取核的序号，识别为 0 时进入 <code>primary</code> 标签，否则暂停执行</p>
+<pre class="hljs"><code><div>    mrs x8, mkidr_el1 
+    <span class="hljs-keyword">and</span> x8, x8, #<span class="hljs-number">0xFF</span>
+    cbz x8, primary /* 检测序号是否为 <span class="hljs-number">0</span> */
+
+    ...
+<span class="hljs-symbol">primary:</span>
+    ...
+    b init_c /* 进入初始化流程 */
+</div></code></pre>
+<h2 id="%E5%88%87%E6%8D%A2%E5%BC%82%E5%B8%B8%E7%BA%A7%E5%88%AB">切换异常级别</h2>
+<p>根据提示完成即可。</p>
+<p><strong>思考题 2</strong><br>
+进入 C 代码前不设置启动栈会发生什么？</p>
+<p>C 函数编译后会首先将帧指针和返回地址压栈，若不设置 <code>sp</code> 会访问一个随机的内存地址，会产生无法预料的后果。</p>
+<p><strong>思考题 3</strong><br>
+不清理 <code>.bss</code> 段在之后的何种情况下会导致内核无法工作？</p>
+<p>初始化一个全局变量时，若未清理 <code>.bss</code> 段可能会导致该全局变量为一个随机值而不是默认的零值。</p>
+<h2 id="%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%B2%E5%8F%A3%E8%BE%93%E5%87%BA">初始化串口输出</h2>
+<p>循环使用 <code>early_uart_send</code> 打印字符串中所有字符即可。</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">uart_send_string</span><span class="hljs-params">(<span class="hljs-keyword">char</span> *str)</span>
+</span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; str[i] != <span class="hljs-string">'\0'</span>; i++) {
+        early_uart_send(str[i]);
+    }
+}
+</div></code></pre>
+<h2 id="%E5%90%AF%E7%94%A8-mmu">启用 MMU</h2>
+<p>观察到 <code>A SAO SA nAA C I</code> 字段均已设置，只需要仿照格式设置 <code>M</code> 字段启用 MMU 即可。</p>
+<pre class="hljs"><code><div>    orr x8, x8, #SCTLR_EL1_M
+</div></code></pre>
+<h2 id="%E9%A1%B5%E8%A1%A8%E6%98%A0%E5%B0%84">页表映射</h2>
+<p>以 L2 级页表的填充为例，先观察低地址的映射</p>
+<pre class="hljs"><code><div>u64 vaddr = PHYSMEM_START;
+
+<span class="hljs-comment">/* Normal memory: PHYSMEM_START ~ PERIPHERAL_BASE */</span>
+<span class="hljs-comment">/* Map with 2M granularity */</span>
+<span class="hljs-keyword">for</span> (; vaddr &lt; PERIPHERAL_BASE; vaddr += SIZE_2M) {
+        boot_ttbr0_l2[GET_L2_INDEX(vaddr)] =
+                (vaddr) <span class="hljs-comment">/* low mem, va = pa */</span>
+                | UXN <span class="hljs-comment">/* Unprivileged execute never */</span>
+                | ACCESSED <span class="hljs-comment">/* Set access flag */</span>
+                | NG <span class="hljs-comment">/* Mark as not global */</span>
+                | INNER_SHARABLE <span class="hljs-comment">/* Shareability */</span>
+                | NORMAL_MEMORY <span class="hljs-comment">/* Normal memory */</span>
+                | IS_VALID;
+}
+</div></code></pre>
+<p>给定一个虚拟地址 <code>vaddr</code>，通过 <code>GET_L2_INDEX</code> 获取物理地址对应的页表项位置，给对应的页表项填充物理地址的值，因为低地址中虚拟地址等于物理地址，所以</p>
+<pre class="hljs"><code><div>boot_ttbr0_l2[GET_L2_INDEX(vaddr)] = (vaddr) | ...
+</div></code></pre>
+<p>在填充高地址时，物理地址对应的虚拟地址为物理地址加上一个固定偏移量 <code>vaddr = paddr + KERNEL_VADDR</code>，我们还需要修改循环的范围上限，也加上一个偏移量，并且使页表项的填充值为 <code>vaddr - KERNEL_VADDR</code>，最终得到</p>
+<pre class="hljs"><code><div>u64 vaddr = KERNEL_VADDR + PHYSMEM_START;
+
+<span class="hljs-keyword">for</span> (; vaddr &lt; KERNEL_VADDR + PERIPHERAL_BASE; vaddr += SIZE_2M) {
+                boot_ttbr1_l2[GET_L2_INDEX(vaddr)] =
+                        (vaddr - KERNEL_VADDR) <span class="hljs-comment">/* low mem, va = pa */</span>
+                        | UXN <span class="hljs-comment">/* Unprivileged execute never */</span>
+                        | ACCESSED <span class="hljs-comment">/* Set access flag */</span>
+                        | NG <span class="hljs-comment">/* Mark as not global */</span>
+                        | INNER_SHARABLE <span class="hljs-comment">/* Shareability */</span>
+                        | NORMAL_MEMORY <span class="hljs-comment">/* Normal memory */</span>
+                        | IS_VALID;
+        }
+</div></code></pre>
+<p>其余几个部分的代码也可以通过相同的思路完成。</p>
+<p><strong>思考题 4</strong><br>
+多级页表优劣？</p>
+<ul>
+<li>优：当使用到的虚拟地址较为稀疏时，多级列表可以有效降低需要储存的页表大小，节省内存。</li>
+<li>劣：当使用到的虚拟地址十分密集时，多级页表需要内存容量更大；多级页表的 MMU 十分复杂。</li>
+</ul>
+<p>对于 4KB 粒度，共需 $2^{32} / 2^{12} = 2^{20}$ 个页，L3 表需要 $2^{20} / 2^9 = 2^{11}$ 个，L2 表需要 $2^{11} / 2^9 = 4$ 个，L1 和 L0 表各需要 $1$ 个，页表需要空间 $4(2^{11}+4+1+1)= 8216$ KB。</p>
+<p>对于 2MB 粒度，共需 $2^{32} / 2^{21} = 2^{11}$ 个页，L2 表需要 $2^{12} / 2^9 = 4$ 个，L1 和 L0 表各需要 $1$ 个，页表需要空间 $4(4+1+1)=24$ KB。</p>
+<p><strong>思考题 5</strong><br>
+实验内核需要的 L2，L1，L0 页表条目分别是多少？</p>
+<p>需要的页数为 $(3\times 2^{28} + 15\times 2^{24}) / 2^{21} = 504$，L2 页表条目需要 504 个，L1 和 L0 都只要 1 个，共占 $3\times4=12$ KB。</p>
+<p><strong>思考题 6</strong><br>
+为什么要为低地址配置页表？</p>
+<p>在开启 MMU 前，内核在低地址上运行，此时 <code>pc</code> 的值为一个低地址，在开启后的一小段时间内，<code>pc</code> 的值仍然是低地址，此时由于低地址也配置了页表，因此低地址的 <code>pc</code> 能够正确被翻译到对的物理地址。后续再通过相应的跳转指令将 <code>pc</code> 的值设为高地址。若没有在低地址配置页表，开启 MMU 后的指令便会试图访问一个页表中不存在的地址，从而报错。</p>
+<p><strong>思考题 7</strong><br>
+什么时候让暂停的核心继续执行？为什么一开始只让 0 号核心执行初始化流程？</p>
+<p>在 0 号核心的 <code>init_c</code> 函数中，当 MMU 开启后会执行 <code>start_kernel(secondary_boot_flag)</code> 来设置这个 flag。随后在 <code>_start</code> 函数中，其他核心检测到 flag 改变就会跳转到 <code>seconday_init_c</code> 来继续执行。</p>
+<p>只让 0 号核心执行初始化的原因：</p>
+<ul>
+<li>MMU 等功能的开启是全局性的，只需要一个核心便可以完成</li>
+<li>多核运行容易导致数据竞争，通信开销等问题，会使得初始化流程更加复杂</li>
+</ul>
+<p><img src="./fig/sysboot.png" alt="启动页面"></p>
+
+</body>
+</html>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });
+</script>
