@@ -117,8 +117,8 @@ void *_kmalloc(size_t size, bool is_record, size_t *real_size)
                 /* LAB 2 TODO 3 BEGIN */
                 /* Step 1: Allocate in slab for small requests. */
                 /* BLANK BEGIN */
-                UNUSED(addr);
-                UNUSED(order);
+
+                addr = alloc_in_slab(size, real_size);
 
                 /* BLANK END */
 #if ENABLE_MEMORY_USAGE_COLLECTING == ON
@@ -129,6 +129,9 @@ void *_kmalloc(size_t size, bool is_record, size_t *real_size)
         } else {
                 /* Step 2: Allocate in buddy for large requests. */
                 /* BLANK BEGIN */
+
+                order = size_to_page_order(size);
+                addr = get_pages(order);
 
                 /* BLANK END */
                 /* LAB 2 TODO 3 END */

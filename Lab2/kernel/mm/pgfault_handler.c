@@ -10,6 +10,8 @@
  * Mulan PSL v2 for more details.
  */
 
+#include "common/macro.h"
+#include "mm/buddy.h"
 #include <arch/mm/page_table.h>
 #include <mm/cache.h>
 #include <common/backtrace.h>
@@ -210,6 +212,12 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                         /* BLANK BEGIN */
                         /* Hint: Allocate a physical page and clear it to 0. */
 
+                        void *va = get_pages(0);
+                        BUG_ON(va == NULL);
+                        pa = virt_to_phys(va);
+                        // clear the page
+                        memset(va, 0, PAGE_SIZE);
+                        
                         /* BLANK END */
                         /*
                          * Record the physical page in the radix tree:
@@ -221,6 +229,13 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                         /* Add mapping in the page table */
                         lock(&vmspace->pgtbl_lock);
                         /* BLANK BEGIN */
+
+                        map_range_in_pgtbl(vmspace->pgtbl,
+                                           fault_addr,
+                                           pa,
+                                           PAGE_SIZE,
+                                           perm,
+                                           &(vmspace->rss));
 
                         /* BLANK END */
                         unlock(&vmspace->pgtbl_lock);
@@ -250,6 +265,13 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                                 /* Add mapping in the page table */
                                 lock(&vmspace->pgtbl_lock);
                                 /* BLANK BEGIN */
+
+                                map_range_in_pgtbl(vmspace->pgtbl,
+                                                   fault_addr,
+                                                   pa,
+                                                   PAGE_SIZE,
+                                                   perm,
+                                                   &(vmspace->rss));
 
                                 /* BLANK END */
                                 /* LAB 2 TODO 7 END */

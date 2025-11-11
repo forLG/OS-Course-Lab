@@ -10,6 +10,7 @@
  * Mulan PSL v2 for more details.
  */
 
+#include "common/rbtree.h"
 #include <common/types.h>
 #include <common/list.h>
 #include <common/errno.h>
@@ -463,7 +464,15 @@ __maybe_unused struct vmregion *find_vmr_for_va(struct vmspace *vmspace,
         /* LAB 2 TODO 6 BEGIN */
         /* Hint: Find the corresponding vmr for @addr in @vmspace */
         /* BLANK BEGIN */
-        return NULL;
+        struct vmregion *vmr;
+        struct rb_node *node;
+        node = rb_search(&(vmspace->vmr_tree), (const void *)addr, cmp_vmr_and_va);
+        if (node == NULL) {
+                return NULL;
+        }
+
+        vmr = rb_entry(node, struct vmregion, tree_node);
+        return vmr;
         /* BLANK END */
         /* LAB 2 TODO 6 END */
 }
