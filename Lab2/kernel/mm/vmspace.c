@@ -466,13 +466,17 @@ __maybe_unused struct vmregion *find_vmr_for_va(struct vmspace *vmspace,
         /* BLANK BEGIN */
         struct vmregion *vmr;
         struct rb_node *node;
-        node = rb_search(&(vmspace->vmr_tree), (const void *)addr, cmp_vmr_and_va);
+
+        // search for node of vmregion
+        node = rb_search(
+                &vmspace->vmr_tree, (const void *)addr, cmp_vmr_and_va);
+
         if (node == NULL) {
                 return NULL;
+        } else {
+                vmr = rb_entry(node, struct vmregion, tree_node);
+                return vmr;
         }
-
-        vmr = rb_entry(node, struct vmregion, tree_node);
-        return vmr;
         /* BLANK END */
         /* LAB 2 TODO 6 END */
 }

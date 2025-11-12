@@ -59,22 +59,18 @@ __maybe_unused static struct page *split_chunk(struct phys_mem_pool *__maybe_unu
                 return chunk;
         }
 
-        // the chunk is already deleted from the list by `buddy_get_page`
-
-        // shrink the half size and get its buddy chunk
+        // find buddy chunk
         chunk->order -= 1;
-
-        struct page *buddy_chunk;
-        buddy_chunk = get_buddy_chunk(pool, chunk);
+        struct page *buddy_chunk = get_buddy_chunk(pool, chunk);
         if (buddy_chunk != NULL && buddy_chunk->allocated == 0) {
-                // free buddy chunk
                 buddy_chunk->order = chunk->order;
+                // add to the free list
                 list_add(&buddy_chunk->node, &(pool->free_lists[buddy_chunk->order].free_list));
                 pool->free_lists[buddy_chunk->order].nr_free += 1;
         }
 
-        // recursively split the first part of the chunk
-        return split_chunk(pool, order, chunk);
+    	return split_chunk(pool, order, chunk);
+
         /* BLANK END */
         /* LAB 2 TODO 1 END */
 }
@@ -194,23 +190,27 @@ struct page *buddy_get_pages(struct phys_mem_pool *pool, int order)
          */
         /* BLANK BEGIN */
 
-        // start from the smallest chunk
-        for (cur_order = order; cur_order <= BUDDY_MAX_ORDER; cur_order++) {
-                free_list = &(pool->free_lists[cur_order].free_list);
-                if (!list_empty(free_list)) {
-                        page = list_entry(free_list->next, struct page, node);
-                        
-                        // delete the chunk from the free list
-                        list_del(&page->node);
-                        pool->free_lists[cur_order].nr_free -= 1;
-
-                        // get desired page by `split_chunk`
-                        page = split_chunk(pool, order, page);
-
-                        page->allocated = 1;
-                        goto out;
-                }    
+        // find smallest capabale chunk
+        cur_order = order;
+        while(cur_order < BUDDY_MAX_ORDER && pool->free_lists[cur_order].nr_free == 0) {
+                cur_order += 1;
         }
+
+        // no free
+        if (cur_order >= BUDDY_MAX_ORDER) {
+                unlock(&pool->buddy_lock);
+                return NULL;
+        }
+
+        // remove from free list
+        free_list = &(pool->free_lists[cur_order].free_list);
+        page = list_entry(free_list->next, struct page, node);
+        list_del(&page->node);
+        pool->free_lists[cur_order].nr_free -= 1;
+
+        // mark as allocated
+        page = split_chunk(pool, order, page);
+        page->allocated = 1;
 
         /* BLANK END */
         /* LAB 2 TODO 1 END */

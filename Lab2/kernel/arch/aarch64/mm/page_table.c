@@ -301,33 +301,51 @@ int query_in_pgtbl(void *pgtbl, vaddr_t va, paddr_t *pa, pte_t **entry)
          */
         /* BLANK BEGIN */
 
-        ptp_t *l0_ptp, *l1_ptp, *l2_ptp, *l3_ptp, *phys_pg;
+        ptp_t *l0_ptp, *l1_ptp, *l2_ptp, *l3_ptp;
+        ptp_t *phys_page; // physics page
         pte_t *pte;
         int ret;
 
         l0_ptp = (ptp_t *)pgtbl;
-
-        l1_ptp = NULL;
-        l2_ptp = NULL;
-        l3_ptp = NULL;
-        phys_pg = NULL;
-
-        // walk through each level of page table
         ret = get_next_ptp(l0_ptp, L0, va, &l1_ptp, &pte, false, NULL);
-        if (ret < 0) return -ENOMAPPING;
+        if (ret == -ENOMAPPING) {
+                return ret;
+        }
 
         ret = get_next_ptp(l1_ptp, L1, va, &l2_ptp, &pte, false, NULL);
-        if (ret < 0) return -ENOMAPPING;
-
+        if (ret == -ENOMAPPING) {
+                return ret;
+        }
+        else if (ret == BLOCK_PTP) {
+                if (entry != NULL) {
+                        *entry = pte;
+                }
+                *pa = virt_to_phys(l2_ptp) + GET_VA_OFFSET_L1(va);
+                return 0;
+        }
+        
         ret = get_next_ptp(l2_ptp, L2, va, &l3_ptp, &pte, false, NULL);
-        if (ret < 0) return -ENOMAPPING;
+        if (ret == -ENOMAPPING) {
+                return ret;
+        }
+        else if (ret == BLOCK_PTP) {
+                if (entry != NULL) {
+                        *entry = pte;
+                }
+                *pa = virt_to_phys(l3_ptp) + GET_VA_OFFSET_L2(va);
+                return 0;
+        }
 
-        // get physics page
-        ret = get_next_ptp(l3_ptp, L3, va, &phys_pg, &pte, false, NULL);
-        if (ret < 0) return -ENOMAPPING;
+        ret = get_next_ptp(l3_ptp, L3, va, &phys_page, &pte, false, NULL);
+        if (ret == -ENOMAPPING) {
+                return ret;
+        }
+        if (entry != NULL) {
+                *entry = pte;
+        }
 
-        *pa = virt_to_phys((vaddr_t)phys_pg) + GET_VA_OFFSET_L3(va);
-        *entry = pte;
+        // calculage pa
+        *pa = virt_to_phys((vaddr_t)phys_page) + GET_VA_OFFSET_L3(va);
 
         /* BLANK END */
         /* LAB 2 TODO 4 END */
@@ -489,33 +507,23 @@ int unmap_range_in_pgtbl(void *pgtbl, vaddr_t va, size_t len,
         total_page_cnt = len / PAGE_SIZE + (((len % PAGE_SIZE) > 0) ? 1 : 0);
 
         l0_ptp = (ptp_t *)pgtbl;
-
         l1_ptp = NULL;
         l2_ptp = NULL;
         l3_ptp = NULL;
 
-        while(total_page_cnt > 0) {
+        while (total_page_cnt > 0)
+        {       
                 ret = get_next_ptp(l0_ptp, L0, va, &l1_ptp, &pte, false, rss);
-                BUG_ON(ret != 0);
-
                 ret = get_next_ptp(l1_ptp, L1, va, &l2_ptp, &pte, false, rss);
-                BUG_ON(ret != 0);
-
                 ret = get_next_ptp(l2_ptp, L2, va, &l3_ptp, &pte, false, rss);
                 BUG_ON(ret != 0);
 
+                // set invalid
                 pte_index = GET_L3_INDEX(va);
                 for (i = pte_index; i < PTP_ENTRIES; ++i) {
-  
-                        // unmap
                         l3_ptp->ent[i].l3_page.is_valid = 0;
-
-                        // iterate to next entry
                         va += PAGE_SIZE;
-                        if (rss) {
-                                *rss -= PAGE_SIZE;
-                        }
-                        total_page_cnt -= 1;
+                        total_page_cnt--;
                         if (total_page_cnt == 0) {
                                 break;
                         }
@@ -554,36 +562,28 @@ int mprotect_in_pgtbl(void *pgtbl, vaddr_t va, size_t len, vmr_prop_t flags)
         total_page_cnt = len / PAGE_SIZE + (((len % PAGE_SIZE) > 0) ? 1 : 0);
 
         l0_ptp = (ptp_t *)pgtbl;
-
         l1_ptp = NULL;
         l2_ptp = NULL;
         l3_ptp = NULL;
 
-        while(total_page_cnt > 0) {
+        while (total_page_cnt > 0)
+        {       
                 ret = get_next_ptp(l0_ptp, L0, va, &l1_ptp, &pte, false, NULL);
-                BUG_ON(ret != 0);
-
                 ret = get_next_ptp(l1_ptp, L1, va, &l2_ptp, &pte, false, NULL);
-                BUG_ON(ret != 0);
-
                 ret = get_next_ptp(l2_ptp, L2, va, &l3_ptp, &pte, false, NULL);
                 BUG_ON(ret != 0);
 
+                // protect
                 pte_index = GET_L3_INDEX(va);
                 for (i = pte_index; i < PTP_ENTRIES; ++i) {
-  
-                        // protect
                         set_pte_flags(&(l3_ptp->ent[i]), flags, USER_PTE);
-
-                        // iterate to next entry
                         va += PAGE_SIZE;
-
-                        total_page_cnt -= 1;
+                        total_page_cnt--;
                         if (total_page_cnt == 0) {
                                 break;
                         }
                 }
-        }
+        }      
 
         /* BLANK END */
         /* LAB 2 TODO 4 END */

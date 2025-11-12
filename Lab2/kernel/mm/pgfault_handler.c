@@ -212,12 +212,16 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                         /* BLANK BEGIN */
                         /* Hint: Allocate a physical page and clear it to 0. */
 
-                        void *va = get_pages(0);
-                        BUG_ON(va == NULL);
-                        pa = virt_to_phys(va);
-                        // clear the page
-                        memset(va, 0, PAGE_SIZE);
-                        
+                        // allocate physics page
+                        vaddr_t kva = (vaddr_t)get_pages(0);
+                        BUG_ON(kva == 0);
+
+                        // pa
+                        pa = virt_to_phys((void *)kva);
+
+                        // clear to 0
+                        memset((void *)kva, 0, PAGE_SIZE);
+                                                
                         /* BLANK END */
                         /*
                          * Record the physical page in the radix tree:
@@ -230,12 +234,8 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                         lock(&vmspace->pgtbl_lock);
                         /* BLANK BEGIN */
 
-                        map_range_in_pgtbl(vmspace->pgtbl,
-                                           fault_addr,
-                                           pa,
-                                           PAGE_SIZE,
-                                           perm,
-                                           &(vmspace->rss));
+                        ret = map_range_in_pgtbl(vmspace->pgtbl, fault_addr, pa, PAGE_SIZE, perm, &(vmspace->rss));
+                        BUG_ON(ret != 0);
 
                         /* BLANK END */
                         unlock(&vmspace->pgtbl_lock);
@@ -266,12 +266,8 @@ int handle_trans_fault(struct vmspace *vmspace, vaddr_t fault_addr)
                                 lock(&vmspace->pgtbl_lock);
                                 /* BLANK BEGIN */
 
-                                map_range_in_pgtbl(vmspace->pgtbl,
-                                                   fault_addr,
-                                                   pa,
-                                                   PAGE_SIZE,
-                                                   perm,
-                                                   &(vmspace->rss));
+                                ret = map_range_in_pgtbl(vmspace->pgtbl, fault_addr, pa, PAGE_SIZE, perm, &(vmspace->rss));
+                                BUG_ON(ret != 0);       
 
                                 /* BLANK END */
                                 /* LAB 2 TODO 7 END */

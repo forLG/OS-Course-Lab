@@ -139,19 +139,17 @@ static void choose_new_current_slab(struct slab_pointer * __maybe_unused pool)
         /* LAB 2 TODO 2 BEGIN */
         /* Hint: Choose a partial slab to be a new current slab. */
         /* BLANK BEGIN */
-        struct list_head *list;
 
-        list = &(pool->partial_slab_list);
-        if (list_empty(list)) {
+        struct list_head *partial_slab_list;
+        struct slab_header *partial_slab;
+
+        partial_slab_list = &(pool->partial_slab_list);
+        if (list_empty(partial_slab_list)) {
                 pool->current_slab = NULL;
-        }
-        else {
-                struct slab_header *slab;
-
-                slab = (struct slab_header *)list_entry(list->next, struct slab_header, node);
-                pool->current_slab = slab;
-                // delete it from `partial_slab_list`
-                list_del(list->next);
+        } else {
+                partial_slab = (struct slab_header *)list_entry(partial_slab_list->next, struct slab_header, node);
+                pool->current_slab = partial_slab;
+                list_del(partial_slab_list->next);
         }
 
         /* BLANK END */
@@ -185,15 +183,17 @@ static void *alloc_in_slab_impl(int order)
          */
         /* BLANK BEGIN */
 
-        // find a free slot
-        free_list = (struct slab_slot_list *)(current_slab->free_list_head);
-        next_slot = free_list->next_free;
+        // find a slot
+        free_list = (struct slab_slot_list *)current_slab->free_list_head;
+        BUG_ON(free_list == NULL);
 
+        // remove the slot
+        next_slot = free_list->next_free;
         current_slab->free_list_head = next_slot;
         current_slab->current_free_cnt -= 1;
-
-        if (current_slab->current_free_cnt == 0) {
-                choose_new_current_slab(&(slab_pool[order]));
+        // empty，choose another slab
+        if (unlikely(current_slab->current_free_cnt == 0)) {
+                choose_new_current_slab(&slab_pool[order]);
         }
 
         /* BLANK END */
